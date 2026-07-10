@@ -126,17 +126,14 @@ SELECT
 FROM
   users
 WHERE
-  full_name LIKE 'Tanvir%'
-  OR full_name ILIKE '%Haque%';
+  full_name like 'Tanvir%'
+  OR full_name ilike '%Haque%';
 
 
 -- =========================================================================
 -- Query 3: Retrieve all booking records where the payment status is missing --(NULL), replacing the empty result with 'Action Required'.
 -- =========================================================================
 
--- =========================================================================
--- Query 3: Retrieve all booking records where the payment status is missing --(NULL), replacing the empty result with 'Action Required'.
--- =========================================================================
 
 SELECT
   booking_id,
@@ -154,11 +151,60 @@ WHERE
 -- =========================================================================
 
 SELECT
-  booking_id,
-  full_name,
-  fixture,
-  total_cost
+  b.booking_id,
+  u.full_name,
+  m.fixture,
+  b.total_cost
 FROM
   bookings AS b
   INNER JOIN users AS u ON b.user_id = u.user_id
   INNER JOIN matches AS m ON b.match_id = m.match_id;
+
+
+-- =========================================================================
+-- Query 5: Display a comprehensive list of all users and their booking IDs, ensuring that fans who have never bought a ticket are still listed.
+-- =========================================================================
+
+SELECT
+  u.user_id,
+  u.full_name,
+  b.booking_id
+FROM
+  bookings AS b
+  FULL JOIN users AS u ON b.user_id = u.user_id;
+
+
+-- =========================================================================
+-- Query 6: Find all ticket bookings where the total cost is strictly higher --than the average cost of all ticket bookings.
+-- =========================================================================
+
+SELECT
+  booking_id,
+  match_id,
+  total_cost
+FROM
+  bookings AS b
+WHERE
+  total_cost > (
+    SELECT
+      avg(total_cost)
+    FROM
+      bookings
+  );
+
+-- =========================================================================
+-- Query 7: Retrieve the top 2 most expensive matches sorted by base ticket --price, skipping the absolute highest premium match.
+-- =========================================================================
+
+SELECT
+  match_id,
+  fixture,
+  base_ticket_price
+FROM
+  matches
+ORDER BY
+  base_ticket_price DESC
+LIMIT
+  2
+OFFSET
+  1;
