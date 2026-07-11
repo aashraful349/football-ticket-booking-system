@@ -57,4 +57,4 @@ This transactional table records individual ticket purchases by linking users to
 
 ## Part 1: ERD Design (Mandatory)
 
-![ER Diagram](https://i.ibb.co.com/0g7Zmzf/football-ticket-booking-system.jpg)
+![ER Diagram](football-ticket-booking-system.jpg)
