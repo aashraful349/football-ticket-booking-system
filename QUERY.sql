@@ -14,60 +14,67 @@ DROP TABLE IF EXISTS Users;
 -- 1. CREATE USERS TABLE
 -- =========================================================================
 CREATE TABLE Users (
-    user_id int,
-    full_name varchar(120),
-    email varchar(120) not null,
-    role varchar(25) not null,
-    phone_number varchar(25),
-    
-    -- Write your constraint to make 'user_id' the Primary Key
-    constraint pk_user_id primary key(user_id),
-    -- Write your constraint to ensure 'email' values are never duplicated
-    constraint unique_email unique(email),
-    -- Write your check constraint to restrict 'role' to specific allowed strings
-    constraint check_role check(role in ('Ticket Manager','Football Fan'))
+  user_id int unique,
+  full_name varchar(120) NOT NULL,
+  email varchar(120) NOT NULL,
+  role varchar(25) NOT NULL,
+  phone_number varchar(25),
+  -- Write your constraint to make 'user_id' the Primary Key
+  CONSTRAINT pk_user_id PRIMARY KEY (user_id),
+  -- Write your constraint to ensure 'email' values are never duplicated
+  CONSTRAINT unique_email UNIQUE (email),
+  -- Write your check constraint to restrict 'role' to specific allowed strings
+  CONSTRAINT check_role CHECK (role IN ('Ticket Manager', 'Football Fan'))
 );
 
 -- =========================================================================
 -- 2. CREATE MATCHES TABLE
 -- =========================================================================
 CREATE TABLE Matches (
-    match_id int not null,
-    fixture varchar(100) not null,
-    tournament_category varchar(70),
-    base_ticket_price int not null,
-    match_status varchar(20) not null,
-    
-    -- Write your constraint to make 'match_id' the Primary Key
-    constraint pk_match_id primary key(match_id),
-    -- Write your check constraint to prevent negative ticket prices
-    constraint check_base_ticket_price check(base_ticket_price>=0),
-    -- Write your check constraint to restrict 'match_status' values
-    constraint check_match_status check(match_status in ('Available', 'Selling Fast', 'Sold Out', 'Postponed'))
+  match_id int NOT NULL unique,
+  fixture varchar(100) NOT NULL,
+  tournament_category varchar(70),
+  base_ticket_price decimal(10, 2) NOT NULL,
+  match_status varchar(20) NOT NULL,
+  -- Write your constraint to make 'match_id' the Primary Key
+  CONSTRAINT pk_match_id PRIMARY KEY (match_id),
+  -- Write your check constraint to prevent negative ticket prices
+  CONSTRAINT check_base_ticket_price CHECK (base_ticket_price >= 0),
+  -- Write your check constraint to restrict 'match_status' values
+  CONSTRAINT check_match_status CHECK (
+    match_status IN (
+      'Available',
+      'Selling Fast',
+      'Sold Out',
+      'Postponed'
+    )
+  )
 );
 
 
 -- =========================================================================
 -- 3. CREATE BOOKINGS TABLE
 -- =========================================================================
+
 CREATE TABLE Bookings (
-    booking_id int,
-    user_id int,
-    match_id int,
-    seat_number varchar(30),
-    payment_status varchar(20),
-    total_cost int,
-    
-    -- Write your constraint to make 'booking_id' the Primary Key
-    constraint pk_booking_id primary key(booking_id),
-    -- Write your Foreign Key constraint linking 'user_id' to the Users table
-    constraint fk_user_id foreign key(user_id) references Users(user_id),
-    -- Write your Foreign Key constraint linking 'match_id' to the Matches table
-    constraint fk_match_id foreign key(match_id) references Matches(match_id),
-    -- Write your check constraint to ensure 'total_cost' is non-negative
-    constraint check_total_cost check(total_cost>=0),
-    -- Write your check constraint to restrict 'payment_status' values
-    constraint check_payment_status check(payment_status in ('Pending', 'Confirmed', 'Cancelled', 'Refunded'))
+  booking_id int unique,
+  user_id int,
+  match_id int,
+  seat_number varchar(30),
+  payment_status varchar(20),
+  total_cost decimal(10, 2),
+  -- Write your constraint to make 'booking_id' the Primary Key
+  CONSTRAINT pk_booking_id PRIMARY KEY (booking_id),
+  -- Write your Foreign Key constraint linking 'user_id' to the Users table
+  CONSTRAINT fk_user_id FOREIGN key (user_id) REFERENCES Users (user_id),
+  -- Write your Foreign Key constraint linking 'match_id' to the Matches table
+  CONSTRAINT fk_match_id FOREIGN key (match_id) REFERENCES Matches (match_id),
+  -- Write your check constraint to ensure 'total_cost' is non-negative
+  CONSTRAINT check_total_cost CHECK (total_cost >= 0),
+  -- Write your check constraint to restrict 'payment_status' values
+  CONSTRAINT check_payment_status CHECK (
+    payment_status IN ('Pending', 'Confirmed', 'Cancelled', 'Refunded')
+  )
 );
 
 
