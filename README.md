@@ -1,60 +1,149 @@
-# Football Ticket Booking System - Database Design & SQL Queries
+# Football Ticket Booking System
 
-## Overview & Objectives
+A relational database design project for managing football match ticket bookings. The system stores users, football matches, and booking transactions, then demonstrates SQL concepts such as constraints, joins, filtering, aggregation, subqueries, null handling, and pagination.
 
-This assignment is designed to evaluate your understanding of database table design, ERD relationships, and intermediate-to-advanced SQL queries. You will work with a simplified **Football Ticket Booking System** database.
+## Project Overview
 
-By completing this assignment, you will be able to:
+This project models a simple football ticket booking platform where:
 
-- Design an ERD with 1-to-1, 1-to-Many, and Many-to-1 relationships.
-- Understand primary keys, foreign keys, and referential integrity.
-- Write complex SQL queries using `JOIN` variants, subqueries, aggregations, pattern matching, null handling, and pagination.
+- football fans can book seats for available matches
+- ticket managers can be stored as administrative users
+- each booking belongs to one user and one match
+- match and payment statuses are controlled through database constraints
+- sample queries answer common booking and reporting questions
 
-## Database Design & Business Logic
+## Files
 
-The system manages football fans purchasing tickets, upcoming tournament matches, and individual ticket booking receipts.
+| File | Description |
+| --- | --- |
+| `QUERY.sql` | Database setup script containing table creation, sample data, and SQL queries. |
+| `football-ticket-booking-system.jpg` | ER diagram showing the database relationships. |
+| `README.md` | Project documentation. |
 
-### Business Logic & Schema Architecture
+## ER Diagram
 
-Your database design must handle these real-world scenarios by implementing the following exact table fields:
+![Football Ticket Booking System ER Diagram](football-ticket-booking-system.jpg)
 
-### 1. Users Table
+## Database Schema
 
-This table tracks all administrative staff and customers who use the platform.
+### Users
 
-| **Field Name** | **What the Field Does**                                          |
-| -------------- | ---------------------------------------------------------------- |
-| `user_id`      | Unique identification number for each registered user.           |
-| `full_name`    | Stores the first and last name of the user.                      |
-| `email`        | Stores the user's mail address used for login.                   |
-| `role`         | Defines access permissions (`Ticket Manager` or `Football Fan`). |
-| `phone_number` | Stores the contact mobile number of the fan.                     |
+Stores both football fans and ticket managers.
 
-### 2. Matches Table
+| Column | Description |
+| --- | --- |
+| `user_id` | Primary key for each user. |
+| `full_name` | User's full name. |
+| `email` | Unique email address. |
+| `role` | User role: `Ticket Manager` or `Football Fan`. |
+| `phone_number` | Optional contact number. |
 
-This table catalogs the tournament events, stadium logistics, and baseline ticket inventory pricing.
+### Matches
 
-| **Field Name**        | **What the Field Does**                                                                   |
-| --------------------- | ----------------------------------------------------------------------------------------- |
-| `match_id`            | Unique identification number for each football match.                                     |
-| `fixture`             | Tracks the two competing teams (e.g., _Real Madrid vs Barcelona_).                        |
-| `tournament_category` | The league or cup title (e.g., _Champions League_, _Premier League_).                     |
-| `base_ticket_price`   | The foundational price for a single standard entry seat.                                  |
-| `match_status`        | Current ticket availability state (`Available`, `Selling Fast`, `Sold Out`, `Postponed`). |
+Stores match information and ticket availability.
 
-### 3. Bookings Table
+| Column | Description |
+| --- | --- |
+| `match_id` | Primary key for each match. |
+| `fixture` | Competing teams, such as `Real Madrid vs Barcelona`. |
+| `tournament_category` | Tournament or league name. |
+| `base_ticket_price` | Standard ticket price for the match. |
+| `match_status` | Availability status: `Available`, `Selling Fast`, `Sold Out`, or `Postponed`. |
 
-This transactional table records individual ticket purchases by linking users to their chosen matches.
+### Bookings
 
-| **Field Name**   | **What the Field Does**                                                        |
-| ---------------- | ------------------------------------------------------------------------------ |
-| `booking_id`     | Unique tracking transaction number for the ticket purchase.                    |
-| `user_id`        | Links the booking directly to the user who made the purchase.                  |
-| `match_id`       | Links the booking directly to the specific match being attended.               |
-| `seat_number`    | The specific allocated seat identifier in the stadium (e.g., `A-12`).          |
-| `payment_status` | Tracks financial resolution (`Pending`, `Confirmed`, `Cancelled`, `Refunded`). |
-| `total_cost`     | The calculated final invoice price based on the base price and seat quantity.  |
+Stores individual ticket booking records.
 
-## Part 1: ERD Design (Mandatory)
+| Column | Description |
+| --- | --- |
+| `booking_id` | Primary key for each booking. |
+| `user_id` | Foreign key referencing `Users(user_id)`. |
+| `match_id` | Foreign key referencing `Matches(match_id)`. |
+| `seat_number` | Allocated stadium seat number. |
+| `payment_status` | Payment state: `Pending`, `Confirmed`, `Cancelled`, or `Refunded`. |
+| `total_cost` | Final booking cost. |
 
-![ER Diagram](football-ticket-booking-system.jpg)
+## Relationships
+
+- One user can have many bookings.
+- One match can have many bookings.
+- Each booking belongs to exactly one user and one match.
+
+```text
+Users   1 ---- many   Bookings   many ---- 1   Matches
+```
+
+## Constraints Used
+
+The SQL script includes:
+
+- primary keys for all tables
+- unique email validation for users
+- foreign keys from `Bookings` to `Users` and `Matches`
+- check constraints for valid user roles
+- check constraints for valid match statuses
+- check constraints for valid payment statuses
+- non-negative price and booking cost validation
+
+## How to Run
+
+Run the SQL script in a PostgreSQL database client such as `psql`, pgAdmin, or another SQL editor.
+
+Using `psql`:
+
+```bash
+psql -U your_username -d your_database -f QUERY.sql
+```
+
+The script will:
+
+1. Drop existing `Bookings`, `Matches`, and `Users` tables if they exist.
+2. Create the database tables with constraints.
+3. Insert sample users, matches, and bookings.
+4. Run the included practice queries.
+
+## Included SQL Queries
+
+`QUERY.sql` contains queries for:
+
+- finding available Champions League matches
+- searching users by name with pattern matching
+- replacing missing payment status values with `Action Required`
+- joining bookings with user and match details
+- listing users with their booking IDs
+- finding bookings above the average booking cost
+- retrieving the second and third most expensive matches using `LIMIT` and `OFFSET`
+
+## Sample Data Summary
+
+The script includes:
+
+- 4 users
+- 5 football matches
+- 5 booking records
+
+This sample data is enough to test joins, null handling, filtering, aggregation, and pagination.
+
+## SQL Features Practiced
+
+- `CREATE TABLE`
+- `PRIMARY KEY`
+- `FOREIGN KEY`
+- `UNIQUE`
+- `CHECK`
+- `INSERT INTO`
+- `WHERE`
+- `LIKE` and `ILIKE`
+- `COALESCE`
+- `INNER JOIN`
+- `FULL JOIN`
+- subqueries
+- `AVG`
+- `ORDER BY`
+- `LIMIT` and `OFFSET`
+
+## Notes
+
+- The queries use PostgreSQL syntax, including `ILIKE` for case-insensitive matching.
+- `Bookings.payment_status` allows `NULL` in the sample data so null handling can be demonstrated with `COALESCE`.
+- `seat_number` also allows `NULL` to represent bookings that still need seat assignment.
